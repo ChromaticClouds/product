@@ -1,0 +1,451 @@
+@model IEnumerable<YourNamespace.Models.Register>
+@{
+    ViewData["Title"] = "상품 등록";
+    var hasRegisterd = Model.Any();
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/Register.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<style>
+    body {
+        width: 100%;
+        overflow-x: hidden;
+        background-color: #eceef4;
+    }
+</style>
+<body id = "body">
+    <div class="register-container">
+        <div class="on-base">    
+            <div>
+                <h1 class="title">@ViewData["Title"]</h1>
+                <p class="descript">상품을 등록하고 등록된 상품을 관리하세요.</p>
+            </div>
+            @if (hasRegisterd) {
+                <div class="on-base sort top-bar">
+                    <div class="search">
+                        <input class="search-bar top-bar">
+                        <i class="fa-solid fa-magnifying-glass icon"></i>
+                    </div>
+                    <button
+                        id="create"
+                        class="regit-form"
+                        type="button" 
+                    >
+                        상품 등록하기
+                    </button>
+                    <button
+                        id="delete"
+                        class="regit-form delete-form"
+                        type="button"
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            }
+        </div>
+        <div class="top-line"></div>
+        <div id="content">
+            @if (!hasRegisterd)
+            {
+                <div id="register" class="non-exist">
+                    <i class="fa-solid fa-circle-exclamation icon"></i>
+                    <p>이런! 등록된 상품이 없네요...</p>
+                    <button
+                        id="create"
+                        class="regit-form" 
+                        type="button"
+                    >
+                        상품 등록하러 가기
+                    </button>
+                </div>
+            }
+            else {
+                <div id="registered">
+                    <div class="non-exist exist">
+                        <div class="table-container">
+                            <table class="register-table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" onchange="selectAll(this)"/>
+                                        </th>
+                                        <th class="id">ID</th>
+                                        <th class="name">상품명</th>
+                                        <th class="class">분류</th>
+                                        <th class="description">상품설명</th>
+                                        <th class="sale">판매가격</th>
+                                        <th class="origin">원가</th>
+                                        <th class="date">등록날짜</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var register in Model) {
+                                        <tr>
+                                            <td>
+                                                <input 
+                                                    name="product" 
+                                                    type="checkbox"
+                                                    value=@register.RegisterID
+                                                />
+                                            </td>
+                                            <td>@register.RegisterID</td>
+                                            <td>@register.Name</td>
+                                            <td>@register.Category</td>
+                                            <td>@register.Description</td>
+                                            <td>@register.SalePrice</td>
+                                            <td>@register.OriginPrice</td>
+                                            <td>@register.Date</td>
+                                            <td>
+                                                <button
+                                                    class="update-button"
+                                                    value="@register.RegisterID"
+                                                >
+                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="statics">
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <script>
+        $(document).ready(function() {
+            // Event listeners
+            $('#create').on('click', register);
+            $('#name').on('input', inputChecking);
+            $('#discount').on('change', discountChecking);
+            $('#sale-price').on('input', priceValidation);
+            $('#origin-price').on('input', originPriceValidation);
+        });
+
+        const cancelRegister = () => {
+            $('.registering').hide();
+            @if (!hasRegisterd) {
+                @:$('#register').show();
+            } else {
+                @:$('#registered').show();
+                @:$('.top-bar').show();
+            }
+        }
+
+        const register = (e) => {
+            if ($(e).click) {
+                hideBanners();
+                showRegistrationForm();
+            }
+        }
+
+        const hideBanners = () => {
+            $('#register').hide();
+            $('#registered').hide();
+            $('.top-bar').hide();
+        }
+
+        const showRegistrationForm = () => {
+            const contentDiv = $('#content');
+            const registrationForm = getRegistrationFormHtml();
+            contentDiv.append(registrationForm);
+
+            // Attach event listeners to new input
+            $('#name').on('input', inputChecking);
+            $('#discount').on('change', discountChecking);
+            $('#sale-price').on('input', priceValidation);
+            $('#origin-price').on('input', originPriceValidation);
+        }
+
+        const getRegistrationFormHtml = () => {
+            return `
+                <div class="registering">
+                    <div class="tool-bar">
+                        <p class="subtitle">상품 등록하기</p>
+                    </div>
+                    <div class="register-panel">
+                        <p class="subtitle">상품명</p>
+                        <input 
+                            id="name"
+                            class="input-name"
+                            placeholder="상품명을 입력해주세요."
+                            autocomplete="off"
+                        >
+                        <p id="product-name" class="warning"></p>
+                    </div>
+                    <div class="register-panel desc-panel">
+                        <p class="subtitle">상세 설명</p>
+                        <textarea
+                            id="description"
+                            class="input-description"
+                            placeholder="상품 설명을 입력해주세요."
+                        ></textarea>
+                    </div>
+                    <div class="register-panel detail-panel">
+                        <p class="subtitle">상품 분류</p>
+                        <div class="sort">
+                            <fieldset>
+                                ${getCategoryOptionsHtml()}
+                            </fieldset>
+                        </div>
+                        <div class="line"></div>
+                        <p class="subtitle">가격 설정</p>
+                        <div class="price-panel sort left">
+                            <label for="sale-price">판매 가격</label>
+                            <input 
+                                id="sale-price" 
+                                class="input-price"
+                                autocomplete="off"
+                            >
+                            <label for="sale-price">할인 여부</label>
+                            <input
+                                id="discount"
+                                type="checkbox"
+                                class="discount"
+                            >
+                            <label for="sale-price" class="origin-price-label">원가</label>
+                            <input 
+                                id="origin-price"
+                                class="input-price"
+                                disabled
+                                autocomplete="off"
+                            >
+                        </div>
+                        <div class="sort left space">
+                            <p id="price-checking" class="warning"></p>
+                            <p id="origin-price-checking" class="warning"></p>
+                        </div>
+                    </div>
+                    <div class="sort left">
+                        <button 
+                            class="save"
+                            onclick="saveRegister()"
+                        >
+                        저장
+                        </button>
+                        <button 
+                            class="save cancel"
+                            onclick="cancelRegister()"
+                        >취소
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        const getCategoryOptionsHtml = () => {
+            const categories = [
+                "가공식품", "신선식품", "일상용품", "의약품/의료기기", "교육/문화용품",
+                "디지털/가전", "가구/인테리어", "의류", "전문스포츠/레저", "패션잡화", "기타"
+            ];
+            return categories.map(category => `
+                <label>
+                    <input type="radio" name="category" value="${category}" />
+                    <span>${category}</span>
+                </label>
+            `).join('');
+        }
+
+        const inputChecking = (e) => {
+            let input = $(e.target).val();
+            let productName = $("#product-name");
+            productName.text(input === "" ? "최소 한 글자 이상은 입력해주세요." : "");
+        }
+
+        const priceValidation = () => {
+            let salePrice = $('#sale-price').val().trim();
+            let priceChecking = $('#price-checking');
+
+            if (salePrice === "") {
+                priceChecking.text("값을 입력해주세요.");
+            } else if (isNaN(salePrice)) {
+                priceChecking.text("유효한 값을 입력해주세요.");
+            } else {
+                priceChecking.text("");
+            }
+        }
+
+        const originPriceValidation = () => {
+            let originPrice = $('#origin-price').val().trim();
+            let originPriceChecking = $('#origin-price-checking');
+
+            if (originPrice === "") {
+                originPriceChecking.text("값을 입력해주세요.");
+            } else if (isNaN(originPrice)) {
+                originPriceChecking.text("유효한 값을 입력해주세요.");
+            } else {
+                originPriceChecking.text("");
+            }
+        }
+
+        const discountChecking = (e) => {
+            let isChecked = $(e.target).prop('checked');
+            let originPriceInput = $('#origin-price');
+            let originPriceLabel = $('.origin-price-label');
+
+            if (isChecked) {
+                originPriceInput.prop('disabled', false).css('borderBottom', '3px solid #000');
+                originPriceLabel.css('color', '#000');
+                originPriceValidation();
+            } else {
+                originPriceInput.prop('disabled', true).css('borderBottom', '3px solid #ccc');
+                originPriceLabel.css('color', '#ccc');
+                $('#origin-price-checking').text('');
+            }
+        }
+
+        const saveRegister = () => {
+            let name = $('#name').val().trim();
+            if (name === "") {
+                alert("상품명을 입력해주세요.");
+                return;
+            }
+
+            let description = $('#description').val().trim();
+            let category = $('input[name="category"]:checked').val();
+            if (!category) {
+                alert("상품 분류를 선택해주세요");
+                return;
+            }
+
+            let salePrice = $('#sale-price').val().trim();
+            if (salePrice === "" || isNaN(salePrice)) {
+                alert("유효한 판매 가격을 입력해주세요");
+                return;
+            }
+
+            let originPrice = $('#origin-price').val().trim();
+            if ($('#discount').is(':checked')) {
+                if (originPrice === "" || isNaN(originPrice)) {
+                    alert("유효한 원가를 입력해주세요");
+                    return;
+                }
+                if (parseFloat(salePrice) > parseFloat(originPrice)) {
+                    alert("판매 가격은 원가보다 낮아야 합니다.");
+                    return;
+                }
+            } else {
+                originPrice = salePrice;
+            }
+
+            let now = new Date();
+            let obj = {
+                Name: name,
+                Description: description,
+                Category: category,
+                SalePrice: salePrice,
+                OriginPrice: originPrice,
+                Date: now
+            }
+
+            $.ajax({
+                url: '@Url.Action("RegisterProduct")',
+                type: 'POST',
+                data: JSON.stringify(obj),
+                contentType: 'application/json; charset=utf-8',
+                success: function(response) {
+                    alert('상품이 등록되었습니다.');
+                },
+                error: function(error) {
+                    alert('상품 등록에 실패했습니다.');
+                }
+            });
+        }
+
+        const selectAll = (e) => {
+            $('[name="product"]').prop('checked', $(e).prop('checked'));
+        }
+
+        let count = 0;
+        let registerList = [];
+        const deleteRegister = () => {
+            if (@(hasRegisterd ? "true" : "false")) {
+                let anyChecked = false; // 체크된 항목이 있는지 여부를 저장
+
+                $('[name="product"]').each(function() {
+                    if ($(this).is(':checked')) {
+                        count++;
+                        anyChecked = true;
+                        registerList.push({
+                            RegisterID: parseInt($(this).val())
+                        })
+                    }
+                });
+
+                var json = JSON.stringify(registerList);
+
+                if (anyChecked) {
+                    const body = $('body');
+                    const deleteConfirm = deleteConfirmForm();
+                    body.append(deleteConfirm);
+
+                    $('#confirm').on('click', function() {
+                        $('#confirm').remove();
+                    })
+
+                    $('#confirmDelete').on('click', function() {
+                        $.ajax({
+                            url: '@Url.Action("DeleteRegister")',
+                            type: 'DELETE',
+                            contentType: 'application/json',
+                            data: json,
+                            success: function(response) {
+                                alert('삭제되었습니다.');
+                                location.reload();
+                            },
+                            error: function(error) {
+                                alert('재고 처리 후 삭제 바랍니다.');
+                            }
+                        });
+                        
+                        $('#confirm').remove();
+                    });
+
+                    $('#cancelDelete').on('click', function() {
+                        $('#confirm').remove();
+                    });
+
+                    registerList = [];
+                    count = 0;
+                }
+                else {
+                    alert("체크한 항목이 없습니다.")
+                }
+            }
+        };
+
+        const deleteConfirmForm = () => {
+            return `
+                <div id="confirm">
+                    <div class="delete-confirm">
+                        <div>
+                            <span>총 ${count}개의 항목이 선택됐습니다.</span>
+                            <p>정말로 삭제하시겠습니까?</p>
+                            <p class="warning">재고 처리 전까지 삭제 불가능입니다.</p>
+                            <div class="button">
+                                <button id="confirmDelete">확인</button>
+                                <button id="cancelDelete">취소</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+        $(document).ready(function() {
+            $('#delete').on('click', deleteRegister);
+        });
+    </script>
+</body>
+</html>

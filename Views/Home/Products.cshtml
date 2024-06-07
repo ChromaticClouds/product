@@ -1,0 +1,283 @@
+﻿@model IEnumerable<YourNamespace.Models.Product>
+@{
+    ViewData["Title"] = "재고 관리";
+    var date = DateTime.Today;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/Products.css" />
+    <style>
+    body {
+        width: 100%;
+        overflow-x: hidden;
+        background-color: #eceef4;
+    }
+
+    td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px;
+    }
+
+    input::-webkit-calendar-picker-indicator {
+        display: none;
+    }
+    </style>
+</head>
+<body>
+    <div class="contents">
+        <h1 class = "title">@ViewData["title"]</h1>
+        <p class = "descript">한 눈에 재고파악을 하고 검수하세요.</p>
+        <div class="manage-container">
+            <div class = "manage-table">
+                <div class="sort">
+                    <div class = "dropdown">
+                        <div class="select">
+                            <span class="selected">선택해주세요.</span>
+                            <div class="caret"></div>
+                        </div>
+                    </div>
+                    <ul class="menu">
+                        <li class="active">Facebook</li>
+                        <li>Instagram</li>
+                        <li>Twitter</li>
+                        <li>Linkedin</li>
+                        <li>Tik Tok</li>
+                    </ul>
+                    <div class = "dropdown">
+                        <div class="select">
+                            <span class="selected">선택해주세요.</span>
+                            <div class="caret"></div>
+                        </div>
+                    </div>
+                    <ul class="menu">
+                        <li class="active">Facebook</li>
+                        <li>Instagram</li>
+                        <li>Twitter</li>
+                        <li>Linkedin</li>
+                        <li>Tik Tok</li>
+                    </ul>
+                    <div class="search-bar">
+                        <input 
+                            type="text" 
+                            class="search" 
+                            placeholder="상품명을 입력해주세요" 
+                            id="productInput"
+                            list="productList" 
+                            oninput="updateDataList()"
+                            autocomplete="off"
+                            size="50"
+                        >
+                        <i class="icon fa-solid fa-magnifying-glass"></i>
+                        <datalist id="productList" class="list">
+                        </datalist>
+                    </div>
+                </div>
+                <div class="tbody-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="id">제품ID</th>
+                                <th class="name">제품명</th>
+                                <th class="desc">제품설명</th>
+                                <th class="class">분류</th>
+                                <th class="price">가격</th>
+                                <th class="count">개수</th>
+                                <th class="date">입고날짜</th>
+                                <th class="status"></th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody id = 'tbody'>
+                            @foreach (var product in Model)
+                            {
+                                <tr>
+                                    <td>@product.ProductID</td>
+                                    <td>@product.Name</td>
+                                    <td>@product.Description</td>
+                                    <td>@product.Category</td>
+                                    <td>@product.Price.ToString("N0")￦</td>
+                                    <td>@product.Count</td>
+                                    <td>@product.InBound.ToString("yyyy. MM. dd. tt hh:mm:ss")</td>
+                                    <td
+                                        class=@((product.InBound).Ticks <= DateTime.Now.Ticks ? "arrived" : "" )
+                                    >
+                                        @((product.InBound).Ticks <= DateTime.Now.Ticks 
+                                        ? "입고 완료" 
+                                        : "입고 대기" )
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class = "manage-count">
+                <p class = "title-info">재고 통계</p>
+                <div class="line"></div>
+                <div class="manage-box">
+                    <div class="status-box">
+                        <div class="icon-box all-count">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                        </div>
+                        <div class = "status">
+                            <p>전체 재고 수량</p>
+                            @{
+                                long Quantity = 0;
+                            }
+                            @foreach (var product in Model) {
+                                if (product.InBound.Ticks <= DateTime.Now.Ticks) {
+                                    Quantity += product.Count;
+                                }
+                            }
+                            <span class="@(Quantity < 100 ? "insuff" : "")">
+                                @Quantity 개
+                            </span>
+                        </div>
+                    </div>
+                    <div class="status-box">
+                        <div class="icon-box all-price">
+                            <i class="fa-solid fa-sack-dollar"></i>
+                        </div>
+                        <div class = "status">
+                            <p>전체 가격</p>
+                            @{
+                                long Price = 0;
+                            }
+                            @foreach (var product in Model) {
+                                if (product.InBound.Ticks <= DateTime.Now.Ticks) {
+                                    Price += product.Price * product.Count;
+                                }
+                            }
+                            <span>
+                                @Price.ToString("N0") ￦
+                            </span>
+                        </div>
+                    </div>
+                    <div class="status-box">
+                        <div class="icon-box today-count">
+                            <i class="fa-solid fa-truck-ramp-box"></i>
+                        </div>
+                        <div class = "status">
+                            <p>금일 입고량</p>
+                            @{
+                                long Count = 0;
+                            }
+                            @foreach(var product in Model) {
+                                if(@product.InBound.Ticks <= DateTime.Now.Ticks) {
+                                    Count += product.Count;
+                                }
+                            }
+                            <span class="@(Count < 10 ? "insuff" : "")">
+                                @(Count) 개 
+                            </span>
+                        </div>
+                    </div>
+                    <div class="status-box">
+                        <div class="icon-box today-count">
+                            <i class="fa-solid fa-truck-ramp-box"></i>
+                        </div>
+                        <div class = "status">
+                            <p>금일 재고 총 가격</p>
+                            @{
+                                long TodayPrice = 0;
+                            }
+                            @foreach(var product in Model) {
+                                if(@product.InBound.Ticks <= DateTime.Now.Ticks) {
+                                    TodayPrice += product.Price;
+                                }
+                            }
+                            <span>
+                                @(Price.ToString("N0")) ￦
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function updateDataList() {
+        const inputText = document.getElementById('productInput').value;
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', '/products?search=' + encodeURIComponent(inputText), true);
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                try {
+                    const products = JSON.parse(xhr.responseText);
+                    updateProductList(products);
+                } catch (e) {
+                    console.error('Parsing error:', e);
+                }
+            } else {
+                console.error('Request failed. Status:', xhr.status, 'Response:', xhr.responseText);
+            }
+        };
+
+        xhr.onerror = function () {
+            console.error('Request error');
+        };
+
+        xhr.send();
+    }
+
+    function updateProductList(products) {
+        const $tbody = $('#tbody');
+        const $dataList = $('#productList');
+        const inputText = $('#productInput').val();
+
+        $tbody.empty();
+        $dataList.empty();
+
+        const uniqueProducts = products.filter(
+            (arr, index, callback) => index === callback.findIndex(t => t.name === arr.name)
+        );
+
+        if (inputText !== '') {
+            $.each(uniqueProducts, function(index, result) {
+                $dataList.append(`<option value="${result.name}"></option>`);
+            });
+        }
+
+        $.each(products, function(index, product) {
+            const InBound = new Date(product.inBound);
+            const formattedInBound = InBound.toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+
+            const row = `
+                <tr>
+                    <td>${product.productID}</td>
+                    <td>${product.name}</td>
+                    <td>${product.description}</td>
+                    <td>${product.category}</td>
+                    <td>${product.price}￦</td>
+                    <td>${product.count}</td>
+                    <td>${formattedInBound}</td>
+                    <td
+                        class=${InBound.getTime() <= new Date().getTime() ? "arrived" : ""}
+                    >
+                        ${InBound.getTime() <= new Date().getTime() 
+                        ? "입고 완료" 
+                        : "입고 대기"}
+                    </td>
+                </tr>
+            `;
+            $tbody.append(row);
+        });
+    }
+</script>
+</html>

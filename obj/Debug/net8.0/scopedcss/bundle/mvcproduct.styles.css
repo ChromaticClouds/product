@@ -1,0 +1,138 @@
+/* _content/mvcproduct/Views/Shared/_Layout.cshtml.rz.scp.css */
+/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+a[b-9o8mhsqcm0] {
+  text-decoration: none;
+  color: inherit;
+}
+
+.loading[b-9o8mhsqcm0] {
+  z-index: 2;
+}
+
+:root[b-9o8mhsqcm0] {
+  --body-color: #E4E9F7;
+  --sidebar-color: #FFF;
+  --primary-color: #695CFE;
+  --primary-color-light: #F6F5FF;
+  --toggle-color: #DDD;
+  --text-color: #707070;
+}
+
+.side-bar .nav-home[b-9o8mhsqcm0] {
+  display: flex;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  height: 60px;
+  z-index: 1;
+}
+
+.side-bar .home[b-9o8mhsqcm0] {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  height: 100%;
+  margin-left: 20px;
+  z-index: 3;
+}
+
+.side-bar .nav-home .icon[b-9o8mhsqcm0] {
+  margin-left: 20px;
+  background-color: #695CFE;
+  width: 60px;
+  height: 60px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  border-radius: 10px;
+}
+
+.side-bar .nav-home .logo[b-9o8mhsqcm0] {
+  text-decoration: none;
+  color: inherit;
+}
+
+.side-bar[b-9o8mhsqcm0] {
+  position: fixed;
+  width: 300px;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background-color: #fff;
+  z-index: 1;
+}
+
+.side-bar li a[b-9o8mhsqcm0] {
+  text-decoration: none;
+}
+
+.icon-box[b-9o8mhsqcm0] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-right: 20px;
+}
+
+.side-bar li .icon[b-9o8mhsqcm0] {
+  font-size: 30px;
+}
+
+.side-bar li .text[b-9o8mhsqcm0] {
+  font-size: 24px;
+}
+
+.side-bar li .icon[b-9o8mhsqcm0],
+.side-bar li .text[b-9o8mhsqcm0] {
+  color: #707070;
+}
+
+.nav-box ul[b-9o8mhsqcm0] {
+  list-style: none;
+  padding: 0;
+}
+
+.nav-links[b-9o8mhsqcm0] {
+  width: 100%;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}
+
+.nav-box li[b-9o8mhsqcm0] {
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+
+.toggle[b-9o8mhsqcm0] {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  background-color: #0077cc;
+  z-index: 99;
+}
+
+.side-bar li[b-9o8mhsqcm0] {
+  transition: all 0.2s ease;
+}
+
+.side-bar li .sort[b-9o8mhsqcm0] {
+  margin-left: 10px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.side-bar li:hover[b-9o8mhsqcm0] {
+  background-color: #695CFE;
+}
+
+.side-bar li:hover .text[b-9o8mhsqcm0],
+.side-bar li:hover .icon[b-9o8mhsqcm0] {
+  color: #fff;
+}

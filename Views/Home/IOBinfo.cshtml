@@ -1,0 +1,191 @@
+@model YourNamespace.Models.MultiView
+@{
+    ViewData["Title"] = "입출고 관리";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/IOBinfo.css" />
+</head>
+<style>
+    body {
+        width: 100%;
+        overflow-x: hidden;
+        background-color: #eceef4;
+    }
+</style>
+<body>
+    <div class="contents">
+        <h1 class="title">@ViewData["Title"]</h1>
+        <p class="descript">발주한 상품과 출고 예정 상품들을 여기서 손쉽게 관리하세요.</p>
+        <div class="inout-container">
+            <div class="sort">
+                <div class="ib-container">
+                    <div class="ib-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="id">ID</th>
+                                    <th class="name">상품명</th>
+                                    <th class="quantity">입고량</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var inventory in Model.Inventory)
+                                {
+                                    var Name = "";
+                                    var Count = 0;
+                                    foreach (var product in Model.Products)
+                                    {
+                                        if (inventory.RegisterID == product.RegisterID)
+                                        {
+                                            Name = product.Name;
+                                            Count = inventory.TotalQuantity;
+                                            if (product.InBound.Ticks > DateTime.Today.Ticks)
+                                            {
+                                                Count -= product.Count;
+                                            }
+                                        }
+                                    }
+                                    <tr>
+                                        <td>@inventory.RegisterID</td>
+                                        <td>@Name</td>
+                                        <td>@Count</td>
+                                    </tr>
+                                }                        
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="ib-container ob-container">
+                    <div class="buttons">
+                        <button id="add-list">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                        <button id="delete-list">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+                    </div>
+                    <div class="ob-box">
+                        <div class="ob-list">
+                            <div class="ob-form">
+                                <label for = "name">상품명: </label>
+                                <select id = "name">
+                                    @if (Model.Register.Any())
+                                    {
+                                        <option value="1">선택해주세요.</option>
+                                        foreach (var register in Model.Register)
+                                        {
+                                            <option value="@register.RegisterID">@register.Name</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option value="1">선택해주세요.</option>
+                                    }
+                                </select>
+                                <label for = "count">개수: </label>
+                                <input id = "count" type="number" min="0"/>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="submit-outbound" type="button">출고 등록</button>
+                </div>
+            </div>
+            <div>
+
+            </div>
+        </div>  
+    </div>
+</body>
+</html>
+<script>
+    $(document).ready(function() {
+        $('#add-list').on('click', function () {
+            const template = `
+            <div class="ob-list">
+            <div class="ob-form">
+                <label for = "name">상품명: </label>
+                <select id = "name">
+                    @if (Model.Register.Any())
+                    {
+                        <option value="1">선택해주세요.</option>
+                        foreach (var register in Model.Register)
+                        {
+                            <option value="@register.RegisterID">@register.Name</option>
+                        }
+                    }
+                    else
+                    {
+                        <option value="1">선택해주세요.</option>
+                    }
+                </select>
+                <label for = "count">개수: </label>
+                <input id = "count" type="number" min="0"/>
+                </div>
+            </div>`;
+
+            $('.ob-box').append(template);
+        });
+
+        $('#delete-list').on('click', function () {
+            const forms = $('.ob-list');
+            if (forms.length >= 1) {
+                forms.last().remove();
+            }
+        });
+    })
+
+    $('#submit-outbound').on('click', function() {
+            const orders = [];
+            let valid = true;
+
+            $('.ob-list').each(function() {
+                const productID = $(this).find('#name').val();
+                const quantity = $(this).find('#count').val();
+                const outboundDate = new Date().toISOString();
+
+                if (productID === '1' || quantity <= 0) {
+                    alert('유효한 값을 입력해주세요.');
+                    valid = false;
+                    return false;
+                }
+
+                orders.push({
+                    ProductID: productID,
+                    Quantity: parseInt(quantity),
+                    OutBound: outboundDate
+                });
+            });
+
+            if (!valid) {
+                return;
+            }
+
+            if (orders.length > 0) {
+                $.ajax({
+                    url: '/Product/RegisterOutbound',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(orders),
+                    success: function(response) {
+                        if (response.success) {
+                            alert('출고가 등록되었습니다.');
+                            location.reload();
+                        } else {
+                            alert(response.message || '출고 등록에 실패했습니다.');
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error:', error);
+                        alert('출고 등록에 실패했습니다.');
+                    }
+                });
+            } else {
+                alert('최소 하나의 출고 항목을 입력해주세요.');
+            }
+        });
+</script>

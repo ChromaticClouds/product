@@ -1,0 +1,25 @@
+.title {
+  font-size: 48px;
+  font-weight: 600;
+}
+
+.descript {
+  font-size: 20px;
+  margin-bottom: 50px;
+}
+
+.contents {
+  font-family: "Noto Sans KR", sans-serif;
+  margin-top: 60px;
+  margin-left: 40px;
+}
+
+body {
+  font-family: "Noto Sans KR", sans-serif;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  align-content: baseline;
+  user-select: none;
+}

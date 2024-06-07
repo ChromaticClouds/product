@@ -1,0 +1,238 @@
+@model IEnumerable<YourNamespace.Models.Register>
+@{
+    bool hasOrders = Model.Any();
+    ViewData["Title"] = "상품 발주";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/Order.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<style>
+    body {
+        width: 100%;
+        overflow-x: hidden;
+        background-color: #eceef4;
+    }
+</style>
+<body>
+    <div class="contents">
+        <h1 class="title">@ViewData["Title"]</h1>
+        <p class="descript">발주할 상품들을 여기서 신청하세요.</p>
+        <div class="order-management">
+            <div class="display-bar">
+                <h2>발주 관리</h2>
+                <div class="button">
+                    @if (hasOrders) {
+                        <button class="plus" onclick="addProduct()">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                        <button class="plus minus" onclick="removeProduct()">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+                    }
+                </div>
+            </div>
+            <div class="sort">
+                <div>
+                    <div class="line"></div>
+                    <div class="order-container">
+                        <div id = "order-panel">
+                            @if (hasOrders) 
+                            {
+                                <form class="form">
+                                    <div class="order-form">
+                                        <label for="order-product">상품:</label>
+                                        <select id="order-product" name="order-product">
+                                            @if (hasOrders)
+                                            {
+                                                <option value="1">선택해주세요.</option>
+                                                foreach (var register in Model)
+                                                {
+                                                    <option value="@register.RegisterID">@register.Name</option>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <option value="1">선택해주세요.</option>
+                                            }
+                                        </select>
+                                        <label for="order-quantity">발주 수량:</label>
+                                        <input type="number" id="order-quantity" name="order-quantity" min="0" step="1">
+                                        <label for="expected-arrival-date">출고 희망 날짜:</label>
+                                        <input type="date" id="expected-arrival-date" name="expected-arrival-date">
+                                    </div>
+                                </form>
+                            }
+                            else 
+                            {
+                                <script>
+                                    $('#order-panel').css('overflow', 'hidden');
+                                </script>
+                                <div class="non-register">
+                                    <i class="fa-solid fa-triangle-exclamation icon"></i>
+                                    <p>혹시 상품 등록 안하셨어요...?</p>
+                                    <a asp-area="" asp-controller="Home" asp-action="Register">
+                                        <button class="regit-button">
+                                            네....
+                                        </button>
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                        <div class="statics">
+                    
+                        </div>
+                    </div>
+                    <div class="line"></div>
+                </div>
+            </div>
+        </div>
+        @if (hasOrders) 
+        {
+            <button class="order-register" type="submit" onclick="registerOrder()">발주 등록하기</button>
+        }
+    </div>
+</body>
+</html>
+<script>
+    const addProduct = () => {
+        const template = `
+        <form class="form">
+            <div class="order-form">
+                <label for="order-product">상품:</label>
+                <select id="order-product" name="order-product">
+                    @if (hasOrders)
+                    {
+                        <option value="1">선택해주세요.</option>
+                        foreach (var register in Model)
+                        {
+                            <option value="@register.RegisterID">@register.Name</option>
+                        }
+                    }
+                    else
+                    {
+                        <option value="1">선택해주세요.</option>
+                    }
+                </select>
+                <label for="order-quantity">발주 수량:</label>
+                <input type="number" id="order-quantity" name="order-quantity" min="0" step="1">
+                <label for="expected-arrival-date">출고 희망 날짜:</label>
+                <input type="date" id="expected-arrival-date" name="expected-arrival-date">
+            </div>
+        </form>`;
+
+        $('#order-panel').append(template);
+    };
+
+    const removeProduct = () => {
+        const forms = $('.order-container .form');
+        if (forms.length >= 1) {
+            forms.last().remove();
+        }
+    };
+
+    const registerOrder = () => {
+        const orders = [];
+        let isValid = true;
+
+        $('.order-container .form').each(function() {
+            let product = $(this).find('#order-product').val().trim();
+            if (product === '1') {
+                alert('상품명을 선택해주세요.');
+                isValid = false;
+                return false;
+            }
+
+            let quantity = $(this).find('#order-quantity').on('input').val().trim();
+            if (!Number.isInteger(parseFloat(quantity)) || quantity <= 0) {
+                alert('유효한 값을 입력해주세요.');
+                isValid = false;
+                return false;
+            }
+            else {
+                quantity = parseInt(quantity);
+            }
+
+            let arrivalDate = new Date($(this).find('#expected-arrival-date').val());
+            let today = new Date();
+
+            // Set the time part to 00:00:00 to only compare dates
+            arrivalDate.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
+
+            if (arrivalDate <= today) {
+                alert('출고희망일은 최소 금일보다 1일 뒤여야 합니다.');
+                isValid = false;
+                return false;
+            }
+            else if (!arrivalDate.getDate()) {
+                alert('날짜를 선택해주세요.');
+                isValid = false;
+                return false;
+            }
+
+            const generateRandomHour = () => {
+                let hour = new Date().getHours();
+                let isMorning = hour < 12;
+
+                let randomHour;
+                if (isMorning) {
+                    randomHour = Math.floor(Math.random() * 2) + 8;
+                } else {
+                    randomHour = Math.floor(Math.random() * 3) + 13;
+                }
+
+                return randomHour;
+            }
+
+            const utcArrivalDate = new Date(Date.UTC(
+                arrivalDate.getFullYear(),
+                arrivalDate.getMonth(),
+                arrivalDate.getDate(),
+                generateRandomHour(),
+                0,
+                0
+            ));
+
+            if (product && quantity && arrivalDate) {
+                orders.push({
+                    RegisterID: parseInt(product),
+                    Quantity: quantity,
+                    Status: "입고",
+                    OutBound: utcArrivalDate,
+                });
+            }
+        });
+
+        console.log(orders)
+
+        if (!isValid) {
+            return;
+        }
+
+        console.log(orders)
+
+        if (orders.length > 0) {
+            $.ajax({
+                url: '@Url.Action("RegisterOrder", "Home")',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(orders),
+                success: function(response) {
+                    alert('발주가 등록되었습니다.');
+                    $('.order-container .form').remove();
+                },
+                error: function(error) {
+                    alert('발주에 실패하였습니다.');
+                }
+            });
+        } else {
+            alert('최소 한 개 이상의 행을 입력해주세요.');
+        }
+    };
+</script>

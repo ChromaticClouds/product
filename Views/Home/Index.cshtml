@@ -1,0 +1,232 @@
+@{
+    ViewData["Title"] = "대시보드";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="~/css/Index.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<style>
+    body {
+        overflow: hidden;
+        background-color: #eceef4;
+    }
+</style>
+<body>
+    <div class="dashboard-container">
+        <div class="container">
+            <div class="plot-1">
+                <div class="type-a hidden">
+                    <p class="greeting">안녕하세요, <br>다시돌아와서 반가워요</p>
+                    <img src="https://cdni.iconscout.com/illustration/premium/thumb/seller-3462313-2895995.png?f=webp">
+                </div>
+                <div class="sort">
+                    <div class="type-b">
+                        <p class="box-title">취소/반품/교환</p>
+                        <div class="stats">
+                            <div class="list">
+                                <p>출고중지요청</p>
+                                <div class="narrow">
+                                    <span>1</span>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="list">
+                                <p>반품접수</p>
+                                <div class="narrow">
+                                    <span>0</span>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="list">
+                                <p>교환접수</p>
+                                <div class="narrow">
+                                    <span>0</span>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="type-b">
+                        <p class="box-title">미답변문의</p>
+                        <div class="stats">
+                            <div class="list">
+                                <p>고객센터문의</p>
+                                <div class="narrow">
+                                    <span>0</span>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="list">
+                                <p>고객문의</p>
+                                <div class="narrow">
+                                    <span>0</span>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="type-a chart">
+                    <canvas id="line-chart"></canvas>
+                </div>
+            </div>
+            <div class="plot-2">
+                <div class="type-a">
+                    <p class="box-title">판매/배송</p>
+                    <div class="stats">
+                        <div class="ship-list">
+                            <div>
+                                <span>0</span>
+                                <p>결제완료</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right"></i>
+                            <div>
+                                <span>0</span>
+                                <p>상품준비중</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right"></i>
+                            <div>
+                                <span>0</span>
+                                <p>배송지시</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right"></i>
+                            <div>
+                                <span>0</span>
+                                <p>배송중</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right"></i>
+                            <div>
+                                <span>0</span>
+                                <p>배송완료</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="type-a">
+                    <p class="box-title">가격관리</p>
+                    <div class="manage">
+                        <div class="line bind">
+                            <div>
+                                <div class="value">
+                                    <span>6</span><p>개</p>
+                                </div>
+                                <p>최저가 달성 가능 상품 수</p>
+                            </div>
+                        </div>
+                        <div class="bind">
+                            <div>
+                                <div class="value">
+                                    @{
+                                       var value = 1000000;
+                                       var price = value.ToString("N0");
+                                    }
+                                    <span>@price</span><p>원</p>
+                                </div>
+                                <p>가격 조정 28일 후 예상 추가 판매금액</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sort">
+                    <div class="type-b">
+                        <p class="box-title">상품관리</p>
+                        <div class="stats up">
+                            <div class="list">
+                                <p>판매중 상품수</p>
+                                <div class="narrow">
+                                    <span>0</span>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="list">
+                                <p>임시저장 상품수</p>
+                                <div class="narrow">
+                                    <span>0</span>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="list">
+                                <p>승인반려 상품수</p>
+                                <div class="narrow">
+                                    <span>0</span>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="list">
+                                <p>판매자점수</p>
+                                <div class="narrow">
+                                    <span>0</span>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="type-b">
+                        <p class="box-title">판매자점수</p>
+                        <div class="stats up">
+                            <div class="list">
+                                <p>쿠폰이행</p>
+                                <div class="narrow">
+                                    <span>0</span>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="list">
+                                <p>정시출고완료</p>
+                                <div class="narrow">
+                                    <span>0</span>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="list">
+                                <p>24시간 내 답변</p>
+                                <div class="narrow">
+                                    <span>0</span>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="plot-3">
+                <div class="type-c">
+                    <div class="status-box">
+                        <p class="box-title">출고 현황</p>
+                        <div class="stats">
+                            <div class="key">
+                                <div class="lists">
+                                    <p>승인 대기</p>
+                                    <span class="value">0건</span>
+                                </div>
+                                <div class="lists">
+                                    <p>승인 완료</p>
+                                    <span class="value">0건</span>
+                                </div>
+                                <div class="lists">
+                                    <p>승인 반려</p>
+                                    <span class="value">0건</span>
+                                </div>
+                                <div class="lists">
+                                    <p>출고 대기</p>
+                                    <span class="value">0건</span>
+                                </div>
+                                <div class="lists">
+                                    <p>출고 완료</p>
+                                    <span class="value">0건</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script src="~/js/SaleChart.js" asp-append-version="true"></script>
