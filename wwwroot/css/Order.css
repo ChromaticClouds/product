@@ -63,7 +63,7 @@
 
 #order-panel {
     width: calc(100% + 10px);
-    height: 100%;
+    height: calc(100% + 10px);
     overflow-y: scroll;
 }
 
@@ -84,7 +84,7 @@
 
 .non-register {
     width: calc(100% - 10px);
-    height: calc(100% - 20px);
+    height: calc(100% - 10px);
     background-color: #fff;
     border-radius: 20px;
     display: flex;

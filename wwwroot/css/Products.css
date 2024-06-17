@@ -339,6 +339,10 @@ table {
     background-color: #7d7368;
 }
 
+.icon-box.today-price {
+    background-color: #73b8d9;
+}
+
 .manage-box .status {
     text-align: right;
     margin-right: 20px;

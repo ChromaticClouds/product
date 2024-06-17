@@ -125,3 +125,4 @@ C:\Users\kshg0\OneDrive\바탕 화면\.net-backend\mvcproduct\bin\Debug\net8.0\r
 C:\Users\kshg0\OneDrive\바탕 화면\.net-backend\mvcproduct\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Users\kshg0\OneDrive\바탕 화면\.net-backend\mvcproduct\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Users\kshg0\OneDrive\바탕 화면\.net-backend\mvcproduct\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\kshg0\OneDrive\바탕 화면\.net-backend\mvcproduct\obj\Debug\net8.0\mvcproduct.sourcelink.json
